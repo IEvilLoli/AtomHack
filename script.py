@@ -98,7 +98,7 @@ def build_package(filepath):
         shutil.copy2(filepath,
                      curr_path + "/CheckList" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
         create_xml(dict_push, curr_path + "/CheckList" + "/" + dict_push["id_work"])
-    elif "IKL" in dict_push["typefile"] or "Пояснительная записка" in dict_push["typefile"]:
+    elif "IKL" in dict_push["typefile"]  in dict_push["typefile"]:
         if not os.path.isdir(curr_path + "/IKL"):
             os.mkdir(curr_path + "/IKL")
         if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["id_work"]):
@@ -107,7 +107,7 @@ def build_package(filepath):
             os.mkdir(curr_path + "/IKL" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
         shutil.copy2(filepath, curr_path + "/IKL" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
         create_xml(dict_push, curr_path + "/IKL" + "/" + dict_push["id_work"])
-    elif "Notes" or "Рабочая документация" in dict_push["typefile"] or "Пояснительная записка" in dict_push["typefile"]:
+    elif "Notes" or "Рабочая документация" or "Пояснительная записка"  in dict_push["typefile"]:
         if not os.path.isdir(curr_path + "/Notes"):
             os.mkdir(curr_path + "/Notes")
         if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["id_work"]):
@@ -169,5 +169,5 @@ if __name__ == '__main__':
     filepath = find_wf("data")
     print(filepath)
     # filepath = "data/Чек-лист _5 9 3 10 RUENG.docx"
-    build_package(filepath)
+    build_package("data/RU_5_9_3_10.docx")
     # print(datetime.datetime.fromtimestamp(os.path.getctime(filepath)).strftime('%Y%m%d%H%M%S'))
