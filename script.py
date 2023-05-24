@@ -18,7 +18,6 @@ from openpyxl.workbook import Workbook
 import xlsxwriter
 
 
-
 def indent(elem, level=0):
     i = "\n" + level * "  "
     if len(elem):
@@ -43,12 +42,17 @@ def create_xml(dict_for_xml, filepath):
         # если ведомость
         if dict_for_xml["typefile"] == "Рабочая документация":
             attributes = ET.Element('attributes')
-            attributes.append(ET.Element('attribute', name="A_Create_Time", datatype="date", value=dict_for_xml["Дата "]))
-            attributes.append(ET.Element('attribute', name="A_Package_Number", datatype="string", value=dict_for_xml["package"]))
-            attributes.append(ET.Element('attribute', name="A_Revision_Number", datatype="string", value=dict_for_xml["Номер ревизии"]))
+            attributes.append(
+                ET.Element('attribute', name="A_Create_Time", datatype="date", value=dict_for_xml["Дата "]))
+            attributes.append(
+                ET.Element('attribute', name="A_Package_Number", datatype="string", value=dict_for_xml["package"]))
+            attributes.append(ET.Element('attribute', name="A_Revision_Number", datatype="string",
+                                         value=dict_for_xml["Номер ревизии"]))
             attributes.append(ET.Element('attribute', name="A_Inventory_Number", datatype="string", value=""))
-            attributes.append(ET.Element('attribute', name="A_Name", datatype="string", value=dict_for_xml["files_list"][0]))
-            attributes.append(ET.Element('attribute', name="A_Name_Eng", datatype="string", value=dict_for_xml["files_list"][0]))
+            attributes.append(
+                ET.Element('attribute', name="A_Name", datatype="string", value=dict_for_xml["files_list"][0]))
+            attributes.append(
+                ET.Element('attribute', name="A_Name_Eng", datatype="string", value=dict_for_xml["files_list"][0]))
             attributes.append(ET.Element('attribute', name="A_Designation", datatype="string", value=""))
             attributes.append(ET.Element('attribute', name="A_Dep", datatype="classifier", value=""))
             attributes.append(ET.Element('attribute', name="A_User", datatype="user", value=""))
@@ -69,15 +73,19 @@ def create_xml(dict_for_xml, filepath):
             attributes = ET.Element('attributes')
             attributes.append(ET.Element('attribute', name="A_Order", datatype="string", value=dict_for_xml["order"]))
             attributes.append(ET.Element('attribute', name="A_Block", datatype="string", value=dict_for_xml["block"]))
-            attributes.append(ET.Element('attribute', name="A_Package", datatype="string", value=dict_for_xml["package"]))
+            attributes.append(
+                ET.Element('attribute', name="A_Package", datatype="string", value=dict_for_xml["package"]))
             table = ET.Element('attribute', name="A_Docs_Tbl", datatype="table")
             rows = ET.Element('rows')
             for i in range(len(dict_for_xml["id_work"])):
                 t = len(dict_for_xml["id_work"])
                 row = ET.Element('row', order="")
-                row.append(ET.Element('attribute', name="A_Type_Link", datatype="classifier", value=dict_for_xml["list_other_column"][2*i]))
-                row.append(ET.Element('attribute', name="A_Doc_Addition_Ref", datatype="object", value=dict_for_xml["id_element"][i]))
-                row.append(ET.Element('attribute', name="A_Note", datatype="string", value=dict_for_xml["list_other_column"][2*i+1]))
+                row.append(ET.Element('attribute', name="A_Type_Link", datatype="classifier",
+                                      value=dict_for_xml["list_other_column"][2 * i]))
+                row.append(ET.Element('attribute', name="A_Doc_Addition_Ref", datatype="object",
+                                      value=dict_for_xml["id_element"][i]))
+                row.append(ET.Element('attribute', name="A_Note", datatype="string",
+                                      value=dict_for_xml["list_other_column"][2 * i + 1]))
                 rows.append(row)
             table.append(rows)
             attributes.append(table)
@@ -141,12 +149,12 @@ def build_package(filepath, dict_file_status):
     path = Path(file_check)
     file_check = str(path.stem)
 
-    if not(file_check in dict_file_status):
+    if not (file_check in dict_file_status):
         dict_file_status[file_check] = {}
     dict_file_status[file_check]["FE"] = 1
     # print("")
 
-    #формирование основных директорий пакета
+    # формирование основных директорий пакета
     if not os.path.isdir(dict_push["order"]):
         os.mkdir(dict_push["order"])
     if not os.path.isdir(dict_push["order"] + "/" + dict_push["block"]):
@@ -163,7 +171,7 @@ def build_package(filepath, dict_file_status):
         for file in dict_push["files_list"]:
             # print(0)
             # if not dict_file_status[file]:
-            if not(file in dict_file_status):
+            if not (file in dict_file_status):
                 dict_file_status[file] = {}
             dict_file_status[file]["WF"] = 1
             print("")
@@ -180,25 +188,31 @@ def build_package(filepath, dict_file_status):
             os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"])
         if not os.path.isdir(
                 curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-            os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            os.mkdir(
+                curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         shutil.copy2(filepath,
-                     curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+                     curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push[
+                         "document_id"] + ".files")
         create_xml(dict_push, curr_path + "/CheckList" + "/" + dict_push["document_id"])
     elif dict_push["typefile"] == "Additional letter" or dict_push["typefile"] == "Сопроводительное письмо":
         if not os.path.isdir(curr_path + "/IKL"):
             os.mkdir(curr_path + "/IKL")
         if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"]):
             os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"])
-        if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+        if not os.path.isdir(
+                curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
             os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        shutil.copy2(filepath, curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+        shutil.copy2(filepath,
+                     curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/IKL" + "/" + dict_push["document_id"])
-    elif dict_push["typefile"] =="Explanatory Note" or dict_push["typefile"] =="Пояснительная записка" or dict_push["typefile"] == "Рабочая документация":
+    elif dict_push["typefile"] == "Explanatory Note" or dict_push["typefile"] == "Пояснительная записка" or dict_push[
+        "typefile"] == "Рабочая документация":
         if not os.path.isdir(curr_path + "/Notes"):
             os.mkdir(curr_path + "/Notes")
         if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"]):
             os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"])
-        if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+        if not os.path.isdir(
+                curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
             os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         shutil.copy2(filepath,
                      curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
@@ -208,9 +222,11 @@ def build_package(filepath, dict_file_status):
             os.mkdir(curr_path + "/PDTK")
         if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"]):
             os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"])
-        if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+        if not os.path.isdir(
+                curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
             os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        shutil.copy2(filepath, curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+        shutil.copy2(filepath,
+                     curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/PDTK" + "/" + dict_push["document_id"])
     else:
         curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/Docs"
@@ -222,7 +238,6 @@ def build_package(filepath, dict_file_status):
             os.mkdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         shutil.copy2(filepath, curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/" + dict_push["document_id"])
-
 
 
 def find_wf(path):
@@ -276,7 +291,8 @@ def collecting_data(filepath):
 
 
 def create_excel(dict_file_status, path_wf):
-    dict_push = docx_parser.docx_parse(path_wf)
+    if path_wf != "":
+        dict_push = docx_parser.docx_parse(path_wf)
 
     file_name = dict_file_status.keys()
     file_name = list(file_name)
@@ -315,16 +331,24 @@ def create_excel(dict_file_status, path_wf):
         count_wf += x
 
     salaries2 = pd.DataFrame({'Имя файла': file_name,
-                       'Указан в ведомости': check_file_WF,
-                       'Существует физически': check_file_FE,
-                       })
+                              'Указан в ведомости': check_file_WF,
+                              'Существует физически': check_file_FE,
+                              })
 
-    salaries1 = pd.DataFrame({'Контракт': [dict_push['order']],
-                       'Блок': [dict_push["block"]],
-                       'Ведомость': [dict_push["package"]],
-                        'Количество файлов по ведомости': [count_wf],
-                        'Количество файлов физически': [count_ex],
-                       })
+    if path_wf != "":
+        salaries1 = pd.DataFrame({'Контракт': [dict_push['order']],
+                                  'Блок': [dict_push["block"]],
+                                  'Ведомость': [dict_push["package"]],
+                                  'Количество файлов по ведомости': [count_wf],
+                                  'Количество файлов физически': [count_ex],
+                                  })
+    else:
+        salaries1 = pd.DataFrame({'Контракт': 0,
+                                  'Блок': 0,
+                                  'Ведомость': 0,
+                                  'Количество файлов по ведомости': 0,
+                                  'Количество файлов физически': 0,
+                                  }, index=[0])
 
     salary_sheets = {'Общие сведения': salaries1, 'Сведения о ведомости': salaries2}
     writer = pd.ExcelWriter('./files.xlsx', engine='xlsxwriter')
@@ -333,12 +357,14 @@ def create_excel(dict_file_status, path_wf):
     writer._save()
 
 
-
-
 if __name__ == '__main__':
     dict_file_status = collecting_data("data")
     print(dict_file_status)
-    create_excel(dict_file_status, find_wf("data"))
+    try:
+        path_wf = find_wf("data")
+    except:
+        path_wf = ""
+    create_excel(dict_file_status, path_wf)
     # filepath = find_wf("data")
     # print(filepath)
     # filepath = "data/Чек-лист _5 9 3 10 RUENG.docx"
