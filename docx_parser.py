@@ -1,6 +1,7 @@
 import re
 import docx
 
+
 def find_type(name_type, text):
     typefile = re.search(name_type, text)
     typefile_cg = typefile[0] if typefile else 'Not found'
@@ -13,7 +14,6 @@ def docx_parse(filepath):
     text = []
     for paragraph in doc.paragraphs:
         text.append(paragraph.text)
-
 
     full_text_table = []
     for table in doc.tables:
@@ -36,13 +36,13 @@ def docx_parse(filepath):
 
     # Случай для главной ведомости
     if typefile_cg == "Рабочая документация":
-        print( "----------")
+        print("----------")
 
         # Создаём словарь для ведомости
         dict_info_main = {}
 
         dict_info_main["typefile"] = typefile_cg
-        dict_info_main["id_work"] = "12345"
+        dict_info_main["document_id"] = "12345"
         # Собираем названия всех файлов из первой таблицы
         files_list = []
         for i in range(len(doc.tables[0].columns[0].cells)):
@@ -105,6 +105,5 @@ def docx_parse(filepath):
         return dict_info
 
 
-
-if __name__ == '__main__':
-    docx_parse("data/RU_5_9_3_10.docx")
+# if __name__ == '__main__':
+#     docx_parse("data/RU_5_9_3_10.docx")
