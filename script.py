@@ -1,4 +1,7 @@
 # pip install pypiwin32
+# pip install pandas
+# pip install openpyxl
+# pip install xlsxwriter
 
 import io
 import shutil
@@ -10,6 +13,10 @@ import docx_parser
 import xml.etree.ElementTree as ET
 from win32com import client as wc
 from pathlib import Path
+import pandas as pd
+from openpyxl.workbook import Workbook
+import xlsxwriter
+
 
 
 def indent(elem, level=0):
@@ -129,7 +136,11 @@ def create_xml(dict_for_xml, filepath):
 def build_package(filepath, dict_file_status):
     # получение информации о файле
     dict_push = docx_parser.docx_parse(filepath)
-    file_check = filepath.split("\\")[1].split(".")[0]
+    file_check = filepath.split("\\")[1]
+
+    path = Path(file_check)
+    file_check = str(path.stem)
+
     if not(file_check in dict_file_status):
         dict_file_status[file_check] = {}
     dict_file_status[file_check]["FE"] = 1
@@ -250,7 +261,8 @@ def collecting_data(filepath):
         # Преобразование файл doc в docx
         # file = x.split("/")
         new_str = str(x)
-        if str(x)[-4:] == ".doc":
+        path = Path(x)
+        if str(path.suffix) == ".doc":
             w = wc.Dispatch('word.Application')
             # r = os.path.abspath(file)
             doc_docx = w.Documents.Open(os.path.abspath(x))
@@ -260,13 +272,71 @@ def collecting_data(filepath):
             new_str = str(x) + 'x'
         build_package(new_str, dict_file_status)
         # dict_file_status
+    return dict_file_status
 
-    print("")
+
+def create_excel(dict_file_status, path_wf):
+    dict_push = docx_parser.docx_parse(path_wf)
+
+    file_name = dict_file_status.keys()
+    file_name = list(file_name)
+
+    WF = []
+    FE = []
+    for values in dict_file_status.values():
+        if 'WF' in values:
+            WF.append(values['WF'])
+        else:
+            WF.append(0)
+        if 'FE' in values:
+            FE.append(values["FE"])
+        else:
+            FE.append(0)
+
+    check_file_WF = []
+    check_file_FE = []
+
+    for check in WF:
+        if check == 1:
+            check_file_WF.append('Да')
+        else:
+            check_file_WF.append('Нет')
+    for check in FE:
+        if check == 1:
+            check_file_FE.append('Да')
+        else:
+            check_file_FE.append('Нет')
+    # Подсчёт количества файлов физически
+    count_ex = 0
+    for x in FE:
+        count_ex += x
+
+    salaries2 = pd.DataFrame({'Имя файла': file_name,
+                       'Указан в ведомости': check_file_WF,
+                       'Существует физически': check_file_FE,
+                       })
+
+    salaries1 = pd.DataFrame({'Контракт': [dict_push['order']],
+                       'Блок': [dict_push["block"]],
+                       'Ведомость': [dict_push["package"]],
+                        'Количество файлов по ведомости': [(len(dict_push['files_list']))],
+                        'Количество файлов физически': [count_ex],
+                       })
+
+    salary_sheets = {'Общие сведения': salaries1, 'Сведения о ведомости': salaries2}
+    writer = pd.ExcelWriter('./files.xlsx', engine='xlsxwriter')
+    for sheet_name in salary_sheets.keys():
+        salary_sheets[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
+    writer._save()
+
+
 
 
 if __name__ == '__main__':
-    collecting_data("data")
-    filepath = find_wf("data")
+    dict_file_status = collecting_data("data")
+    print(dict_file_status)
+    create_excel(dict_file_status, find_wf("data"))
+    # filepath = find_wf("data")
     # print(filepath)
     # filepath = "data/Чек-лист _5 9 3 10 RUENG.docx"
     # build_package("data/RU_5_9_3_10.docx", dict_file_status = {})
