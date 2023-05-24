@@ -1,7 +1,6 @@
 import re
 import docx
 
-
 def find_type(name_type, text):
     typefile = re.search(name_type, text)
     typefile_cg = typefile[0] if typefile else 'Not found'
@@ -9,15 +8,11 @@ def find_type(name_type, text):
 
 
 def docx_parse(filepath):
-    # doc = docx.Document("Чек-лист _5 9 3 10 RUENG.docx")
+    # Открытие и сбор текста из файла
     doc = docx.Document(filepath)
-    print(doc.paragraphs)
-
     text = []
     for paragraph in doc.paragraphs:
         text.append(paragraph.text)
-    print('\n'.join(text))
-
     print(doc.tables[1].columns[0].cells[1].text)
 
     full_text_table = []
@@ -26,25 +21,34 @@ def docx_parse(filepath):
             for cell in column.cells:
                 full_text_table.append(cell.text)
                 # print(cell.text)
-
     text_paragraphs = ' '.join(text)
     text_tables = ' '.join(full_text_table)
     text_all = text_paragraphs + text_tables
 
+    # Проверка типа документа
     typefile_cg = find_type("Рабочая документация", text_all)
     if typefile_cg == 'Not found':
         typefile_cg = find_type("Чек-лист", text_all)
     if typefile_cg == 'Not found':
         typefile_cg = find_type("Сопроводительное письмо", text_all)
 
-    # новое решение
-    print("----------")
+    # if typefile_cg == "Рабочая документация":
+    print( "----------")
 
+    # Создаём словарь для ведомости
     dict_info_main = {}
 
     dict_info_main["typefile"] = typefile_cg
     dict_info_main["id_work"] = "12345"
-    full_text_table = []
+    # Собираем названия всех файлов из первой таблицы
+    files_list = []
+    for i in range(len(doc.tables[0].columns[0].cells)):
+        if i != 0 and i != 1:
+            files_list.append(doc.tables[0].columns[0].cells[i].text)
+
+    print(files_list)
+    dict_info_main["files_list"] = files_list
+    # Собираем данные из второй таблицы
     for j in range(len(doc.tables[1].rows)):
         for i in range(len(doc.tables[1].rows[j].cells)):
             if j != 0:
@@ -61,7 +65,7 @@ def docx_parse(filepath):
                     dict_info_main[doc.tables[1].rows[0].cells[i].text] = text_clear
                     # full_text_table.append(cell.text)
     print(dict_info_main)
-
+    # Возвращаем словарь с информацией о ведомости
     return dict_info_main
 
 
