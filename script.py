@@ -29,71 +29,101 @@ def indent(elem, level=0):
 
 
 def create_xml(dict_for_xml, filepath):
-    # если ведомость
+    try:
+        root = ET.Element('object', id=dict_for_xml["document_id"], status="", createUser="",
+                          objectDef="", modifyUser="User")
 
-    # если Docs
-    # root = ET.Element('data')
-    # object = ET.Element('object', id=dict_for_xml["document_id"], createTime="",
-    #                     modifyTime="", status="", createUser="",
-    #                     objectDef="", modifyUser="")
-    # attributes = ET.Element('attributes')
-    # attributes.append(ET.Element('attribute', name="A_Creation_Date", datatype="date", value=""))
-    # attributes.append(ET.Element('attribute', name="A_Name", datatype="string", value=""))
-    # attributes.append(ET.Element('attribute', name="A_Designation", datatype="string", value=""))
-    # table = ET.Element('attribute', name="A_Docs_Tbl", datatype="table")
-    # rows = ET.Element('rows')
-    # for i in range(1):
-    #     row = ET.Element('row', order="")
-    #     row.append(ET.Element('attribute', name="A_Type_Link", datatype="classifier", value=""))
-    #     row.append(ET.Element('attribute', name="A_Doc_Addition_Ref", datatype="object", value=""))
-    #     row.append(ET.Element('attribute', name="A_Note", datatype="string", value=""))
-    #     rows.append(row)
-    # table.append(rows)
-    # attributes.append(table)
-    # object.append(attributes)
-    # files = ET.Element('files')
-    # files.append(ET.Element('file', id="", name="", primary="", bodyId="", modifiedTime="",
-    #                         createdTime="", fileDef="", hash="", size="", path=""))
-    # object.append(files)
-    # root.append(object)
+        # если ведомость
+        if dict_for_xml["typefile"] == "Рабочая документация":
+            attributes = ET.Element('attributes')
+            attributes.append(ET.Element('attribute', name="A_Create_Time", datatype="date", value=dict_for_xml["Дата "]))
+            attributes.append(ET.Element('attribute', name="A_Package_Number", datatype="string", value=dict_for_xml["package"]))
+            attributes.append(ET.Element('attribute', name="A_Revision_Number", datatype="string", value=dict_for_xml["Номер ревизии"]))
+            attributes.append(ET.Element('attribute', name="A_Inventory_Number", datatype="string", value=""))
+            attributes.append(ET.Element('attribute', name="A_Name", datatype="string", value=dict_for_xml["files_list"][0]))
+            attributes.append(ET.Element('attribute', name="A_Name_Eng", datatype="string", value=dict_for_xml["files_list"][0]))
+            attributes.append(ET.Element('attribute', name="A_Designation", datatype="string", value=""))
+            attributes.append(ET.Element('attribute', name="A_Dep", datatype="classifier", value=""))
+            attributes.append(ET.Element('attribute', name="A_User", datatype="user", value=""))
+            attributes.append(ET.Element('attribute', name="A_Doc_Language", datatype="classifier", value=""))
+            root.append(attributes)
+            files = ET.Element('files')
+            files.append(ET.Element('file', id="", name="", primary="", bodyId="", modifiedTime="",
+                                    createdTime="", fileDef="", hash="", size="", path=""))
+            root.append(files)
 
-    # если files_paths
+        # если CheckList, IKL, Notes, PDTK
+        if dict_for_xml["typefile"] == "Заключение ПДТК" or \
+                dict_for_xml["typefile"] == "Additional letter" or \
+                dict_for_xml["typefile"] == "Explanatory Note" or \
+                dict_for_xml["typefile"] == "Пояснительная записка" or \
+                dict_for_xml["typefile"] == "Сопроводительное письмо" or \
+                dict_for_xml["typefile"] == "Чек-лист":
+            attributes = ET.Element('attributes')
+            attributes.append(ET.Element('attribute', name="A_Order", datatype="string", value=dict_for_xml["order"]))
+            attributes.append(ET.Element('attribute', name="A_Block", datatype="string", value=dict_for_xml["block"]))
+            attributes.append(ET.Element('attribute', name="A_Package", datatype="string", value=dict_for_xml["package"]))
+            table = ET.Element('attribute', name="A_Docs_Tbl", datatype="table")
+            rows = ET.Element('rows')
+            for i in range(len(dict_for_xml["id_work"])):
+                t = len(dict_for_xml["id_work"])
+                row = ET.Element('row', order="")
+                row.append(ET.Element('attribute', name="A_Type_Link", datatype="classifier", value=dict_for_xml["list_other_column"][2*i]))
+                row.append(ET.Element('attribute', name="A_Doc_Addition_Ref", datatype="object", value=dict_for_xml["id_element"][i]))
+                row.append(ET.Element('attribute', name="A_Note", datatype="string", value=dict_for_xml["list_other_column"][2*i+1]))
+                rows.append(row)
+            table.append(rows)
+            attributes.append(table)
+            root.append(attributes)
+            files = ET.Element('files')
+            files.append(ET.Element('file', id="", name="", primary="", bodyId="", modifiedTime="",
+                                    createdTime="", fileDef="", hash="", size="", path=""))
+            root.append(files)
 
-    # если CheckList, IKL, Notes, PDTK
-    root = ET.Element('data')
-    object = ET.Element('object', id=dict_for_xml["document_id"], createTime="",
-                        modifyTime="", status="", createUser="",
-                        objectDef="", modifyUser="")
-    attributes = ET.Element('attributes')
-    attributes.append(ET.Element('attribute', name="A_Creation_Date", datatype="date", value=""))
-    attributes.append(ET.Element('attribute', name="A_Name", datatype="string", value=""))
-    attributes.append(ET.Element('attribute', name="A_Designation", datatype="string", value=""))
-    table = ET.Element('attribute', name="A_Docs_Tbl", datatype="table")
-    rows = ET.Element('rows')
-    for i in range(1):
-        row = ET.Element('row', order="")
-        row.append(ET.Element('attribute', name="A_Type_Link", datatype="classifier", value=""))
-        row.append(ET.Element('attribute', name="A_Doc_Addition_Ref", datatype="object", value=""))
-        row.append(ET.Element('attribute', name="A_Note", datatype="string", value=""))
-        rows.append(row)
-    table.append(rows)
-    attributes.append(table)
-    object.append(attributes)
-    files = ET.Element('files')
-    files.append(ET.Element('file', id="", name="", primary="", bodyId="", modifiedTime="",
-                            createdTime="", fileDef="", hash="", size="", path=""))
-    object.append(files)
-    root.append(object)
+        # если files_paths
 
-    indent(root)
-    # xml_str = ET.tostring(root, encoding="utf-8", method="xml")
-    etree = ET.ElementTree(root)
-    f = io.BytesIO()
-    etree.write(f, encoding='utf-8', xml_declaration=True)
-    # print(f.getvalue().decode(encoding="utf-8"))
-    # Чтобы сразу в файл записать:
-    myfile = open(filepath + "/" + dict_for_xml["document_id"] + ".xml", "wb")
-    etree.write(myfile, encoding='utf-8', xml_declaration=True)
+        # если док в пакете
+
+        indent(root)
+        # xml_str = ET.tostring(root, encoding="utf-8", method="xml")
+        etree = ET.ElementTree(root)
+        f = io.BytesIO()
+        etree.write(f, encoding='utf-8', xml_declaration=True)
+        # print(f.getvalue().decode(encoding="utf-8"))
+        # Чтобы сразу в файл записать:
+        myfile = open(filepath + "/" + dict_for_xml["document_id"] + ".xml", "wb")
+        etree.write(myfile, encoding='utf-8', xml_declaration=True)
+    except:
+        root = ET.Element('object', id="", status="", createUser="",
+                          objectDef="", modifyUser="User")
+        attributes = ET.Element('attributes')
+        attributes.append(ET.Element('attribute', name="A_Creation_Date", datatype="date", value=""))
+        attributes.append(ET.Element('attribute', name="A_Name", datatype="string", value=""))
+        attributes.append(ET.Element('attribute', name="A_Designation", datatype="string", value=""))
+        table = ET.Element('attribute', name="A_Docs_Tbl", datatype="table")
+        rows = ET.Element('rows')
+        for i in range(1):
+            row = ET.Element('row', order="")
+            row.append(ET.Element('attribute', name="A_Type_Link", datatype="classifier", value=""))
+            row.append(ET.Element('attribute', name="A_Doc_Addition_Ref", datatype="object", value=""))
+            row.append(ET.Element('attribute', name="A_Note", datatype="string", value=""))
+            rows.append(row)
+        table.append(rows)
+        attributes.append(table)
+        root.append(attributes)
+        files = ET.Element('files')
+        files.append(ET.Element('file', id="", name="", primary="", bodyId="", modifiedTime="",
+                                createdTime="", fileDef="", hash="", size="", path=""))
+        root.append(files)
+        indent(root)
+        # xml_str = ET.tostring(root, encoding="utf-8", method="xml")
+        etree = ET.ElementTree(root)
+        f = io.BytesIO()
+        etree.write(f, encoding='utf-8', xml_declaration=True)
+        # print(f.getvalue().decode(encoding="utf-8"))
+        # Чтобы сразу в файл записать:
+        myfile = open(filepath + "/" + dict_for_xml["document_id"] + ".xml", "wb")
+        etree.write(myfile, encoding='utf-8', xml_declaration=True)
 
 
 def build_package(filepath, dict_file_status):
