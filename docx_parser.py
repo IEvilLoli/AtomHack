@@ -1,6 +1,7 @@
 import re
 import docx
 
+
 def find_type(name_type, text):
     typefile = re.search(name_type, text)
     typefile_cg = typefile[0] if typefile else 'Not found'
@@ -12,12 +13,10 @@ def docx_parse(filepath):
     doc = docx.Document(filepath)
     print(doc.paragraphs)
 
-
     text = []
     for paragraph in doc.paragraphs:
         text.append(paragraph.text)
     print('\n'.join(text))
-
 
     print(doc.tables[1].columns[0].cells[1].text)
 
@@ -30,8 +29,7 @@ def docx_parse(filepath):
 
     text_paragraphs = ' '.join(text)
     text_tables = ' '.join(full_text_table)
-    text_all = text_paragraphs+text_tables
-
+    text_all = text_paragraphs + text_tables
 
     typefile_cg = find_type("Рабочая документация", text_all)
     if typefile_cg == 'Not found':
@@ -40,7 +38,7 @@ def docx_parse(filepath):
         typefile_cg = find_type("Сопроводительное письмо", text_all)
 
     # новое решение
-    print( "----------")
+    print("----------")
 
     dict_info_main = {}
 
@@ -63,8 +61,6 @@ def docx_parse(filepath):
                     dict_info_main[doc.tables[1].rows[0].cells[i].text] = text_clear
                     # full_text_table.append(cell.text)
     print(dict_info_main)
-
-
 
     return dict_info_main
 

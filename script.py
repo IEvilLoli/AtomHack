@@ -12,14 +12,14 @@ from win32com import client as wc
 
 
 def indent(elem, level=0):
-    i = "\n" + level*"  "
+    i = "\n" + level * "  "
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            indent(elem, level+1)
+            indent(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:
@@ -28,17 +28,17 @@ def indent(elem, level=0):
 
 
 def create_xml(dict_for_xml, filepath):
-    #если ведомость
+    # если ведомость
 
-    #если Docs
+    # если Docs
 
-    #если files_paths
+    # если files_paths
 
-    #если CheckList, IKL, Notes, PDTK
+    # если CheckList, IKL, Notes, PDTK
     root = ET.Element('data')
     object = ET.Element('object', id=dict_for_xml["id_work"], createTime="",
-                         modifyTime="", status="", createUser="",
-                         objectDef="", modifyUser="")
+                        modifyTime="", status="", createUser="",
+                        objectDef="", modifyUser="")
     attributes = ET.Element('attributes')
     attributes.append(ET.Element('attribute', name="A_Creation_Date", datatype="date", value=""))
     attributes.append(ET.Element('attribute', name="A_Name", datatype="string", value=""))
@@ -67,12 +67,11 @@ def create_xml(dict_for_xml, filepath):
     etree.write(f, encoding='utf-8', xml_declaration=True)
     # print(f.getvalue().decode(encoding="utf-8"))
     # Чтобы сразу в файл записать:
-    myfile = open(filepath+"/"+dict_for_xml["id_work"]+".xml", "wb")
+    myfile = open(filepath + "/" + dict_for_xml["id_work"] + ".xml", "wb")
     etree.write(myfile, encoding='utf-8', xml_declaration=True)
 
 
-def create_package(filepath):
-
+def build_package(filepath):
     dict_push = docx_parser.docx_parse(filepath)
 
     if not os.path.isdir(dict_push["order"]):
@@ -93,9 +92,11 @@ def create_package(filepath):
             os.mkdir(curr_path + "/CheckList")
         if not os.path.isdir(curr_path + "/CheckList" + "/" + dict_push["id_work"]):
             os.mkdir(curr_path + "/CheckList" + "/" + dict_push["id_work"])
-        if not os.path.isdir(curr_path + "/CheckList" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files"):
+        if not os.path.isdir(
+                curr_path + "/CheckList" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files"):
             os.mkdir(curr_path + "/CheckList" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
-        shutil.copy2(filepath, curr_path + "/CheckList" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
+        shutil.copy2(filepath,
+                     curr_path + "/CheckList" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
         create_xml(dict_push, curr_path + "/CheckList" + "/" + dict_push["id_work"])
     elif "IKL" in dict_push["typefile"] or "Пояснительная записка" in dict_push["typefile"]:
         if not os.path.isdir(curr_path + "/IKL"):
@@ -113,7 +114,8 @@ def create_package(filepath):
             os.mkdir(curr_path + "/Notes" + "/" + dict_push["id_work"])
         if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files"):
             os.mkdir(curr_path + "/Notes" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
-        shutil.copy2(filepath, curr_path + "/Notes" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
+        shutil.copy2(filepath,
+                     curr_path + "/Notes" + "/" + dict_push["id_work"] + "/" + dict_push["id_work"] + ".files")
         create_xml(dict_push, curr_path + "/Notes" + "/" + dict_push["id_work"])
     elif "PDTK" in dict_push["typefile"] or "ПДТК" in dict_push["typefile"]:
         if not os.path.isdir(curr_path + "/PDTK"):
@@ -162,9 +164,10 @@ def find_wf(path):
 
     return filepath
 
+
 if __name__ == '__main__':
     filepath = find_wf("data")
     print(filepath)
     # filepath = "data/Чек-лист _5 9 3 10 RUENG.docx"
-    create_package(filepath)
+    build_package(filepath)
     # print(datetime.datetime.fromtimestamp(os.path.getctime(filepath)).strftime('%Y%m%d%H%M%S'))
