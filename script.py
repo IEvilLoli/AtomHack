@@ -178,16 +178,21 @@ def collecting_data(filepath):
     # list = []
     p = Path(filepath)
     for x in p.rglob("*"):
+        print(str(x)[-4:])
         # list.append(x)
         # Преобразование файл doc в docx
         # file = x.split("/")
-        w = wc.Dispatch('word.Application')
-        # r = os.path.abspath(file)
-        doc_docx = w.Documents.Open(os.path.abspath(x))
-        doc_docx.SaveAs(os.path.abspath(x) + "x", 16)
-        doc_docx.Close()
-        w.Quit()
-        build_package(str(x)+"x", dict_file_status)
+        new_str = str(x)
+        if str(x)[-4:] == ".doc":
+            print(x)
+            w = wc.Dispatch('word.Application')
+            # r = os.path.abspath(file)
+            doc_docx = w.Documents.Open(os.path.abspath(x))
+            doc_docx.SaveAs(os.path.abspath(x) + "x", 16)
+            doc_docx.Close()
+            w.Quit()
+            new_str = str(x) + 'x'
+        build_package(new_str, dict_file_status)
         # dict_file_status
 
     print("")
