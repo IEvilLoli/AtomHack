@@ -279,25 +279,28 @@ def find_wf(path):
 
     file_path = ' '.join(all_files)
     # Ищем только файл ведомости
-    file_path = re.search(r"[Rr][^.WP]{1,}WP \S{1,}\d\.doc\S*", file_path)
+    file_path = re.findall(r"[Rr][^.WP]{1,}WP \S{1,}\d\.doc\S*", file_path)
     # print("find")
     # print(file_path[0] if file_path else 'Not found')
-    filepath = "data/" + file_path[0] if file_path else 'Not found'
+    filepath = []
+    for file in file_path:
+        # filepath = "data/" + file if file else 'Not found'
 
-    # Преобреобразование файла doc в docx
-    try:
-        w = wc.Dispatch('word.Application')
-        doc_docx = w.Documents.Open(os.path.abspath(filepath))
-        doc_docx.SaveAs(os.path.abspath(filepath) + "x", 16)
-        doc_docx.Close()
-        w.Quit()
-    except:
-        now = datetime.datetime.now()
-        with open("Logs.txt", "a", encoding='utf-8') as file:
-            file.write(f"{now}: Ошибка открытия ведомости \n")
+        # Преобреобразование файла doc в docx
+        try:
+            w = wc.Dispatch('word.Application')
+            doc_docx = w.Documents.Open(os.path.abspath(file))
+            doc_docx.SaveAs(os.path.abspath(file) + "x", 16)
+            doc_docx.Close()
+            w.Quit()
+            file += 'x'
+        except:
+            now = datetime.datetime.now()
+            with open("Logs.txt", "a", encoding='utf-8') as myfile:
+                myfile.write(f"{now}: Ошибка открытия ведомости \n")
 
-    # filepath - финальный относительный путь до нужного документа
-    filepath = f"data/{file_path[0]}" + 'x'
+        # filepath - финальный относительный путь до нужного документа
+        filepath.append(f"data/{file}")
     return filepath
 
 
@@ -312,13 +315,16 @@ def collecting_data(filepath):
         new_str = str(x)
         path = Path(x)
         if str(path.suffix) == ".doc":
-            w = wc.Dispatch('word.Application')
-            # r = os.path.abspath(file)
-            doc_docx = w.Documents.Open(os.path.abspath(x))
-            doc_docx.SaveAs(os.path.abspath(x) + "x", 16)
-            doc_docx.Close()
-            w.Quit()
-            new_str = str(x) + 'x'
+            try:
+                w = wc.Dispatch('word.Application')
+                # r = os.path.abspath(file)
+                doc_docx = w.Documents.Open(os.path.abspath(x))
+                doc_docx.SaveAs(os.path.abspath(x) + "x", 16)
+                doc_docx.Close()
+                w.Quit()
+                new_str = str(x) + 'x'
+            except:
+                new_str = str(x) + 'x'
         build_package(new_str, dict_file_status)
         # dict_file_status
     return dict_file_status
