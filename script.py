@@ -32,6 +32,30 @@ def create_xml(dict_for_xml, filepath):
     # если ведомость
 
     # если Docs
+    # root = ET.Element('data')
+    # object = ET.Element('object', id=dict_for_xml["document_id"], createTime="",
+    #                     modifyTime="", status="", createUser="",
+    #                     objectDef="", modifyUser="")
+    # attributes = ET.Element('attributes')
+    # attributes.append(ET.Element('attribute', name="A_Creation_Date", datatype="date", value=""))
+    # attributes.append(ET.Element('attribute', name="A_Name", datatype="string", value=""))
+    # attributes.append(ET.Element('attribute', name="A_Designation", datatype="string", value=""))
+    # table = ET.Element('attribute', name="A_Docs_Tbl", datatype="table")
+    # rows = ET.Element('rows')
+    # for i in range(1):
+    #     row = ET.Element('row', order="")
+    #     row.append(ET.Element('attribute', name="A_Type_Link", datatype="classifier", value=""))
+    #     row.append(ET.Element('attribute', name="A_Doc_Addition_Ref", datatype="object", value=""))
+    #     row.append(ET.Element('attribute', name="A_Note", datatype="string", value=""))
+    #     rows.append(row)
+    # table.append(rows)
+    # attributes.append(table)
+    # object.append(attributes)
+    # files = ET.Element('files')
+    # files.append(ET.Element('file', id="", name="", primary="", bodyId="", modifiedTime="",
+    #                         createdTime="", fileDef="", hash="", size="", path=""))
+    # object.append(files)
+    # root.append(object)
 
     # если files_paths
 
@@ -86,9 +110,16 @@ def build_package(filepath, dict_file_status):
         os.mkdir(dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"])
 
     iswf = re.search(r"[Rr][^.WP]{1,}WP \S{1,}\d\.doc\S*", filepath)
-    if iswf:
+    # t = iswf[0]
+    iswf_t = iswf[0] if iswf else 'Not found'
+    # print(0)
+    # iswf.replace(" ", "_")
+    if iswf_t != 'Not found':
         for file in dict_push["files_list"]:
-            dict_file_status[file] = 1 #???
+            # print(0)
+            # if not dict_file_status[file]:
+            dict_file_status[file] = {}
+            dict_file_status[file]["WF"] = 1
             print("")
 
     # формирование директорий по файлам и копирование файлов, создание xml
@@ -203,5 +234,6 @@ if __name__ == '__main__':
     filepath = find_wf("data")
     print(filepath)
     # filepath = "data/Чек-лист _5 9 3 10 RUENG.docx"
-    # build_package("data/RU_5_9_3_10.docx")
+    # build_package("data/RU_5_9_3_10.docx", dict_file_status = {})
+    # build_package("data/R23 KK56 50UMA 0 ET WP WD003=r0.docx", dict_file_status={})
     # print(datetime.datetime.fromtimestamp(os.path.getctime(filepath)).strftime('%Y%m%d%H%M%S'))
