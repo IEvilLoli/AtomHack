@@ -154,13 +154,26 @@ def build_package(filepath, dict_file_status):
     dict_file_status[file_check]["FE"] = 1
     # print("")
 
-    # формирование основных директорий пакета
-    if not os.path.isdir(dict_push["order"]):
-        os.mkdir(dict_push["order"])
-    if not os.path.isdir(dict_push["order"] + "/" + dict_push["block"]):
-        os.mkdir(dict_push["order"] + "/" + dict_push["block"])
-    if not os.path.isdir(dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"]):
-        os.mkdir(dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"])
+    #формирование основных директорий пакета
+    try:
+        if not os.path.isdir(dict_push["order"]):
+            os.mkdir(dict_push["order"])
+        if not os.path.isdir(dict_push["order"] + "/" + dict_push["block"]):
+            os.mkdir(dict_push["order"] + "/" + dict_push["block"])
+        if not os.path.isdir(dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"]):
+            os.mkdir(dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"])
+    except:
+        path_wf = find_wf("data")
+        if path_wf != "":
+            err_dict_push = docx_parser.docx_parse(path_wf)
+        if not os.path.isdir(err_dict_push["order"]):
+            os.mkdir(err_dict_push["order"])
+        if not os.path.isdir(err_dict_push["order"] + "/" + err_dict_push["block"]):
+            os.mkdir(err_dict_push["order"] + "/" + err_dict_push["block"])
+        if not os.path.isdir(err_dict_push["order"] + "/" + err_dict_push["block"] + "/" + err_dict_push["package"]):
+            os.mkdir(err_dict_push["order"] + "/" + err_dict_push["block"] + "/" + err_dict_push["package"])
+        with open("Logs.txt", "a", encoding='utf-8') as file:
+            file.write(f"Ошибка чтения и создания директорий для файла: {filepath}\n")
 
     iswf = re.search(r"[Rr][^.WP]{1,}WP \S{1,}\d\.doc\S*", filepath)
     # t = iswf[0]
@@ -177,59 +190,65 @@ def build_package(filepath, dict_file_status):
             print("")
 
     # формирование директорий по файлам и копирование файлов, создание xml
-    curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/AccDocs"
-    if not os.path.isdir(curr_path):
-        os.mkdir(curr_path)
-    print(dict_push)
-    if dict_push["typefile"] == "Check-list" or dict_push["typefile"] == "Чек-лист":
-        if not os.path.isdir(curr_path + "/CheckList"):
-            os.mkdir(curr_path + "/CheckList")
-        if not os.path.isdir(curr_path + "/CheckList" + "/" + dict_push["document_id"]):
-            os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"])
-        if not os.path.isdir(
-                curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-            os.mkdir(
-                curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        shutil.copy2(filepath,
-                     curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push[
-                         "document_id"] + ".files")
-        create_xml(dict_push, curr_path + "/CheckList" + "/" + dict_push["document_id"])
-    elif dict_push["typefile"] == "Additional letter" or dict_push["typefile"] == "Сопроводительное письмо":
-        if not os.path.isdir(curr_path + "/IKL"):
-            os.mkdir(curr_path + "/IKL")
-        if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"]):
-            os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"])
-        if not os.path.isdir(
-                curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-            os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        shutil.copy2(filepath,
-                     curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        create_xml(dict_push, curr_path + "/IKL" + "/" + dict_push["document_id"])
-    elif dict_push["typefile"] == "Explanatory Note" or dict_push["typefile"] == "Пояснительная записка" or dict_push[
-        "typefile"] == "Рабочая документация":
-        if not os.path.isdir(curr_path + "/Notes"):
-            os.mkdir(curr_path + "/Notes")
-        if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"]):
-            os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"])
-        if not os.path.isdir(
-                curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-            os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        shutil.copy2(filepath,
-                     curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        create_xml(dict_push, curr_path + "/Notes" + "/" + dict_push["document_id"])
-    elif dict_push["typefile"] == "Заключение ПДТК":
-        if not os.path.isdir(curr_path + "/PDTK"):
-            os.mkdir(curr_path + "/PDTK")
-        if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"]):
-            os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"])
-        if not os.path.isdir(
-                curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-            os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        shutil.copy2(filepath,
-                     curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        create_xml(dict_push, curr_path + "/PDTK" + "/" + dict_push["document_id"])
-    else:
-        curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/Docs"
+    try:
+        curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/AccDocs"
+        if not os.path.isdir(curr_path):
+            os.mkdir(curr_path)
+        print(dict_push)
+        if dict_push["typefile"] == "Check-list" or dict_push["typefile"] == "Чек-лист":
+            if not os.path.isdir(curr_path + "/CheckList"):
+                os.mkdir(curr_path + "/CheckList")
+            if not os.path.isdir(curr_path + "/CheckList" + "/" + dict_push["document_id"]):
+                os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"])
+            if not os.path.isdir(
+                    curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath,
+                         curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            create_xml(dict_push, curr_path + "/CheckList" + "/" + dict_push["document_id"])
+        elif dict_push["typefile"] == "Additional letter" or dict_push["typefile"] == "Сопроводительное письмо":
+            if not os.path.isdir(curr_path + "/IKL"):
+                os.mkdir(curr_path + "/IKL")
+            if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"]):
+                os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"])
+            if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath, curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            create_xml(dict_push, curr_path + "/IKL" + "/" + dict_push["document_id"])
+        elif dict_push["typefile"] =="Explanatory Note" or dict_push["typefile"] =="Пояснительная записка" or dict_push["typefile"] == "Рабочая документация":
+            if not os.path.isdir(curr_path + "/Notes"):
+                os.mkdir(curr_path + "/Notes")
+            if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"]):
+                os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"])
+            if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath,
+                         curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            create_xml(dict_push, curr_path + "/Notes" + "/" + dict_push["document_id"])
+        elif dict_push["typefile"] == "Заключение ПДТК":
+            if not os.path.isdir(curr_path + "/PDTK"):
+                os.mkdir(curr_path + "/PDTK")
+            if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"]):
+                os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"])
+            if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath, curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            create_xml(dict_push, curr_path + "/PDTK" + "/" + dict_push["document_id"])
+        else:
+            curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/Docs"
+            if not os.path.isdir(curr_path):
+                os.mkdir(curr_path)
+            if not os.path.isdir(curr_path + "/" + dict_push["document_id"]):
+                os.mkdir(curr_path + "/" + dict_push["document_id"])
+            if not os.path.isdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath, curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            create_xml(dict_push, curr_path + "/" + dict_push["document_id"])
+    except:
+        path_wf = find_wf("data")
+        if path_wf != "":
+            err_dict_push = docx_parser.docx_parse(path_wf)
+        curr_path = err_dict_push["order"] + "/" + err_dict_push["block"] + "/" + err_dict_push["package"] + "/Docs"
         if not os.path.isdir(curr_path):
             os.mkdir(curr_path)
         if not os.path.isdir(curr_path + "/" + dict_push["document_id"]):
@@ -237,8 +256,9 @@ def build_package(filepath, dict_file_status):
         if not os.path.isdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
             os.mkdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         shutil.copy2(filepath, curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-        create_xml(dict_push, curr_path + "/" + dict_push["document_id"])
 
+        with open("Logs.txt", "a", encoding='utf-8') as file:
+            file.write(f"Ошибка записи файла в директорию: {filepath} \n")
 
 def find_wf(path):
     all_files = []
@@ -255,11 +275,15 @@ def find_wf(path):
     filepath = "data/" + file_path[0] if file_path else 'Not found'
 
     # Преобразуем файл doc в docx, т.к. библиотека не работает без этого
-    w = wc.Dispatch('word.Application')
-    doc_docx = w.Documents.Open(os.path.abspath(filepath))
-    doc_docx.SaveAs(os.path.abspath(filepath) + "x", 16)
-    doc_docx.Close()
-    w.Quit()
+    try:
+        w = wc.Dispatch('word.Application')
+        doc_docx = w.Documents.Open(os.path.abspath(filepath))
+        doc_docx.SaveAs(os.path.abspath(filepath) + "x", 16)
+        doc_docx.Close()
+        w.Quit()
+    except:
+        print('lol')
+
 
     # filepath - финальный относительный путь до нужного документа
     filepath = f"data/{file_path[0]}" + 'x'
