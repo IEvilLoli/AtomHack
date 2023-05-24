@@ -159,7 +159,7 @@ def build_package(filepath, dict_file_status):
     iswf_t = iswf[0] if iswf else 'Not found'
     # print(0)
     # iswf.replace(" ", "_")
-    if iswf_t != 'Not found':
+    if iswf_t != 'Not found' and 'files_list' in dict_push:
         for file in dict_push["files_list"]:
             # print(0)
             # if not dict_file_status[file]:
@@ -308,8 +308,11 @@ def create_excel(dict_file_status, path_wf):
             check_file_FE.append('Нет')
     # Подсчёт количества файлов физически
     count_ex = 0
+    count_wf = 0
     for x in FE:
         count_ex += x
+    for x in WF:
+        count_wf += x
 
     salaries2 = pd.DataFrame({'Имя файла': file_name,
                        'Указан в ведомости': check_file_WF,
@@ -319,7 +322,7 @@ def create_excel(dict_file_status, path_wf):
     salaries1 = pd.DataFrame({'Контракт': [dict_push['order']],
                        'Блок': [dict_push["block"]],
                        'Ведомость': [dict_push["package"]],
-                        'Количество файлов по ведомости': [(len(dict_push['files_list']))],
+                        'Количество файлов по ведомости': [count_wf],
                         'Количество файлов физически': [count_ex],
                        })
 
