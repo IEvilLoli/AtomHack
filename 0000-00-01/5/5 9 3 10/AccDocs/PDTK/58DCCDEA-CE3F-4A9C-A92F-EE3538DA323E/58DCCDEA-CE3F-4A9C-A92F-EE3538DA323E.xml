@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='utf-8'?>
+<object id="58DCCDEA-CE3F-4A9C-A92F-EE3538DA323E" status="" createUser="" objectDef="" modifyUser="User">
+  <attributes>
+    <attribute name="A_Order" datatype="string" value="0000-00-01" />
+    <attribute name="A_Block" datatype="string" value="5" />
+    <attribute name="A_Package" datatype="string" value="5 9 3 10" />
+    <attribute name="A_Docs_Tbl" datatype="table">
+      <rows>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+        <row order="">
+          <attribute name="A_Type_Link" datatype="classifier" value="Designation (link)" />
+          <attribute name="A_Doc_Addition_Ref" datatype="object" value="1073741824" />
+          <attribute name="A_Note" datatype="string" value="Comment (can be Null) " />
+        </row>
+      </rows>
+    </attribute>
+  </attributes>
+  <files>
+    <file id="" name="" primary="" bodyId="" modifiedTime="" createdTime="" fileDef="" hash="" size="" path="" />
+  </files>
+</object>
