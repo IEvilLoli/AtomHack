@@ -14,10 +14,12 @@ import xml.etree.ElementTree as ET
 from win32com import client as wc
 from pathlib import Path
 import pandas as pd
+import datetime
 from openpyxl.workbook import Workbook
 import xlsxwriter
 
 
+# формирование отступов xml-файла
 def indent(elem, level=0):
     i = "\n" + level * "  "
     if len(elem):
@@ -34,12 +36,13 @@ def indent(elem, level=0):
             elem.tail = i
 
 
+# формирование сопровожлающих xml-файлов
 def create_xml(dict_for_xml, filepath):
     try:
         root = ET.Element('object', id=dict_for_xml["document_id"], status="", createUser="",
                           objectDef="", modifyUser="User")
 
-        # если ведомость
+        # если xml создаётся для ведомости
         if dict_for_xml["typefile"] == "Рабочая документация":
             attributes = ET.Element('attributes')
             attributes.append(
@@ -63,7 +66,7 @@ def create_xml(dict_for_xml, filepath):
                                     createdTime="", fileDef="", hash="", size="", path=""))
             root.append(files)
 
-        # если CheckList, IKL, Notes, PDTK
+        # для CheckList, IKL, Notes, PDTK
         if dict_for_xml["typefile"] == "Заключение ПДТК" or \
                 dict_for_xml["typefile"] == "Additional letter" or \
                 dict_for_xml["typefile"] == "Explanatory Note" or \
@@ -100,15 +103,17 @@ def create_xml(dict_for_xml, filepath):
         # если док в пакете
 
         indent(root)
-        # xml_str = ET.tostring(root, encoding="utf-8", method="xml")
         etree = ET.ElementTree(root)
         f = io.BytesIO()
         etree.write(f, encoding='utf-8', xml_declaration=True)
-        # print(f.getvalue().decode(encoding="utf-8"))
         # Чтобы сразу в файл записать:
         myfile = open(filepath + "/" + dict_for_xml["document_id"] + ".xml", "wb")
         etree.write(myfile, encoding='utf-8', xml_declaration=True)
     except:
+        now = datetime.datetime.now()
+        with open("Logs.txt", "a", encoding='utf-8') as file:
+            file.write(f"{now}: Ошибка создания xml-файла: {filepath} \n")
+
         root = ET.Element('object', id="", status="", createUser="",
                           objectDef="", modifyUser="User")
         attributes = ET.Element('attributes')
@@ -131,16 +136,15 @@ def create_xml(dict_for_xml, filepath):
                                 createdTime="", fileDef="", hash="", size="", path=""))
         root.append(files)
         indent(root)
-        # xml_str = ET.tostring(root, encoding="utf-8", method="xml")
         etree = ET.ElementTree(root)
         f = io.BytesIO()
         etree.write(f, encoding='utf-8', xml_declaration=True)
-        # print(f.getvalue().decode(encoding="utf-8"))
-        # Чтобы сразу в файл записать:
+        # Запись в файл
         myfile = open(filepath + "/" + dict_for_xml["document_id"] + ".xml", "wb")
         etree.write(myfile, encoding='utf-8', xml_declaration=True)
 
 
+# формирование пакетов документов
 def build_package(filepath, dict_file_status):
     # получение информации о файле
     dict_push = docx_parser.docx_parse(filepath)
@@ -152,9 +156,8 @@ def build_package(filepath, dict_file_status):
     if not (file_check in dict_file_status):
         dict_file_status[file_check] = {}
     dict_file_status[file_check]["FE"] = 1
-    # print("")
 
-    #формирование основных директорий пакета
+    # формирование основных директорий пакета
     try:
         if not os.path.isdir(dict_push["order"]):
             os.mkdir(dict_push["order"])
@@ -176,63 +179,70 @@ def build_package(filepath, dict_file_status):
             file.write(f"Ошибка чтения и создания директорий для файла: {filepath}\n")
 
     iswf = re.search(r"[Rr][^.WP]{1,}WP \S{1,}\d\.doc\S*", filepath)
-    # t = iswf[0]
     iswf_t = iswf[0] if iswf else 'Not found'
-    # print(0)
-    # iswf.replace(" ", "_")
     if iswf_t != 'Not found' and 'files_list' in dict_push:
         for file in dict_push["files_list"]:
-            # print(0)
-            # if not dict_file_status[file]:
             if not (file in dict_file_status):
                 dict_file_status[file] = {}
             dict_file_status[file]["WF"] = 1
-            print("")
 
     # формирование директорий по файлам и копирование файлов, создание xml
     try:
         curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/AccDocs"
         if not os.path.isdir(curr_path):
             os.mkdir(curr_path)
-        print(dict_push)
+        # print(dict_push)
         if dict_push["typefile"] == "Check-list" or dict_push["typefile"] == "Чек-лист":
             if not os.path.isdir(curr_path + "/CheckList"):
                 os.mkdir(curr_path + "/CheckList")
             if not os.path.isdir(curr_path + "/CheckList" + "/" + dict_push["document_id"]):
                 os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"])
             if not os.path.isdir(
-                    curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-                os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+                    curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push[
+                        "document_id"] + ".files"):
+                os.mkdir(curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push[
+                    "document_id"] + ".files")
             shutil.copy2(filepath,
-                         curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+                         curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push[
+                             "document_id"] + ".files")
             create_xml(dict_push, curr_path + "/CheckList" + "/" + dict_push["document_id"])
         elif dict_push["typefile"] == "Additional letter" or dict_push["typefile"] == "Сопроводительное письмо":
             if not os.path.isdir(curr_path + "/IKL"):
                 os.mkdir(curr_path + "/IKL")
             if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"]):
                 os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"])
-            if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-                os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-            shutil.copy2(filepath, curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            if not os.path.isdir(
+                    curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(
+                    curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath, curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push[
+                "document_id"] + ".files")
             create_xml(dict_push, curr_path + "/IKL" + "/" + dict_push["document_id"])
-        elif dict_push["typefile"] =="Explanatory Note" or dict_push["typefile"] =="Пояснительная записка" or dict_push["typefile"] == "Рабочая документация":
+        elif dict_push["typefile"] == "Explanatory Note" or dict_push["typefile"] == "Пояснительная записка" or \
+                dict_push["typefile"] == "Рабочая документация":
             if not os.path.isdir(curr_path + "/Notes"):
                 os.mkdir(curr_path + "/Notes")
             if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"]):
                 os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"])
-            if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-                os.mkdir(curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            if not os.path.isdir(
+                    curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(
+                    curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
             shutil.copy2(filepath,
-                         curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+                         curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push[
+                             "document_id"] + ".files")
             create_xml(dict_push, curr_path + "/Notes" + "/" + dict_push["document_id"])
         elif dict_push["typefile"] == "Заключение ПДТК":
             if not os.path.isdir(curr_path + "/PDTK"):
                 os.mkdir(curr_path + "/PDTK")
             if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"]):
                 os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"])
-            if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
-                os.mkdir(curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-            shutil.copy2(filepath, curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            if not os.path.isdir(
+                    curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+                os.mkdir(
+                    curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath, curr_path + "/PDTK" + "/" + dict_push["document_id"] + "/" + dict_push[
+                "document_id"] + ".files")
             create_xml(dict_push, curr_path + "/PDTK" + "/" + dict_push["document_id"])
         else:
             curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/Docs"
@@ -240,9 +250,11 @@ def build_package(filepath, dict_file_status):
                 os.mkdir(curr_path)
             if not os.path.isdir(curr_path + "/" + dict_push["document_id"]):
                 os.mkdir(curr_path + "/" + dict_push["document_id"])
-            if not os.path.isdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
+            if not os.path.isdir(
+                    curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files"):
                 os.mkdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
-            shutil.copy2(filepath, curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
+            shutil.copy2(filepath,
+                         curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
             create_xml(dict_push, curr_path + "/" + dict_push["document_id"])
     except:
         path_wf = find_wf("data")
@@ -260,21 +272,22 @@ def build_package(filepath, dict_file_status):
         with open("Logs.txt", "a", encoding='utf-8') as file:
             file.write(f"Ошибка записи файла в директорию: {filepath} \n")
 
+
+# Поиск пути файла ведомости
 def find_wf(path):
     all_files = []
     for root, dirs, files in os.walk(path):
         for filename in files:
             all_files.append(filename)
-            # print(filename)
 
     file_path = ' '.join(all_files)
     # Ищем только файл ведомости
     file_path = re.search(r"[Rr][^.WP]{1,}WP \S{1,}\d\.doc\S*", file_path)
-    print("find")
-    print(file_path[0] if file_path else 'Not found')
+    # print("find")
+    # print(file_path[0] if file_path else 'Not found')
     filepath = "data/" + file_path[0] if file_path else 'Not found'
 
-    # Преобразуем файл doc в docx, т.к. библиотека не работает без этого
+    # Преобреобразование файла doc в docx
     try:
         w = wc.Dispatch('word.Application')
         doc_docx = w.Documents.Open(os.path.abspath(filepath))
@@ -282,12 +295,12 @@ def find_wf(path):
         doc_docx.Close()
         w.Quit()
     except:
-        print('lol')
-
+        now = datetime.datetime.now()
+        with open("Logs.txt", "a", encoding='utf-8') as file:
+            file.write(f"{now}: Ошибка открытия ведомости \n")
 
     # filepath - финальный относительный путь до нужного документа
     filepath = f"data/{file_path[0]}" + 'x'
-
     return filepath
 
 
@@ -313,7 +326,7 @@ def collecting_data(filepath):
         # dict_file_status
     return dict_file_status
 
-
+# скрипт формирования отчётного excel файла
 def create_excel(dict_file_status, path_wf):
     if path_wf != "":
         dict_push = docx_parser.docx_parse(path_wf)
@@ -388,6 +401,9 @@ if __name__ == '__main__':
         path_wf = find_wf("data")
     except:
         path_wf = ""
+        now = datetime.datetime.now()
+        with open("Logs.txt", "a", encoding='utf-8') as file:
+            file.write(f"{now}: Ошибка : не найдена ведомость \n")
     create_excel(dict_file_status, path_wf)
     # filepath = find_wf("data")
     # print(filepath)
