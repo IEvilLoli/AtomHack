@@ -126,7 +126,8 @@ def build_package(filepath, dict_file_status):
     curr_path = dict_push["order"] + "/" + dict_push["block"] + "/" + dict_push["package"] + "/AccDocs"
     if not os.path.isdir(curr_path):
         os.mkdir(curr_path)
-    if "Check-list" in dict_push["typefile"] or "Чек-лист" in dict_push["typefile"]:
+    print(dict_push)
+    if dict_push["typefile"] == "Check-list" or dict_push["typefile"] == "Чек-лист":
         if not os.path.isdir(curr_path + "/CheckList"):
             os.mkdir(curr_path + "/CheckList")
         if not os.path.isdir(curr_path + "/CheckList" + "/" + dict_push["document_id"]):
@@ -137,7 +138,7 @@ def build_package(filepath, dict_file_status):
         shutil.copy2(filepath,
                      curr_path + "/CheckList" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/CheckList" + "/" + dict_push["document_id"])
-    elif "IKL" in dict_push["typefile"]  in dict_push["typefile"]:
+    elif dict_push["typefile"] == "Additional letter" or dict_push["typefile"] == "Сопроводительное письмо":
         if not os.path.isdir(curr_path + "/IKL"):
             os.mkdir(curr_path + "/IKL")
         if not os.path.isdir(curr_path + "/IKL" + "/" + dict_push["document_id"]):
@@ -146,7 +147,8 @@ def build_package(filepath, dict_file_status):
             os.mkdir(curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         shutil.copy2(filepath, curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/IKL" + "/" + dict_push["document_id"])
-    elif "Notes" or "Пояснительная записка" in dict_push["typefile"]:# or "Рабочая документация"
+    elif dict_push["typefile"] =="Explanatory Note" or dict_push["typefile"] =="Пояснительная записка" or dict_push["typefile"] == "Рабочая документация":
+        print("lol")
         if not os.path.isdir(curr_path + "/Notes"):
             os.mkdir(curr_path + "/Notes")
         if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"]):
@@ -156,7 +158,7 @@ def build_package(filepath, dict_file_status):
         shutil.copy2(filepath,
                      curr_path + "/Notes" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/Notes" + "/" + dict_push["document_id"])
-    elif "PDTK" in dict_push["typefile"] or "ПДТК" in dict_push["typefile"]:
+    elif dict_push["typefile"] == "Заключение ПДТК":
         if not os.path.isdir(curr_path + "/PDTK"):
             os.mkdir(curr_path + "/PDTK")
         if not os.path.isdir(curr_path + "/PDTK" + "/" + dict_push["document_id"]):
@@ -182,7 +184,7 @@ def find_wf(path):
     for root, dirs, files in os.walk(path):
         for filename in files:
             all_files.append(filename)
-            print(filename)
+            # print(filename)
 
     file_path = ' '.join(all_files)
     # Ищем только файл ведомости
@@ -209,13 +211,11 @@ def collecting_data(filepath):
     # list = []
     p = Path(filepath)
     for x in p.rglob("*"):
-        print(str(x)[-4:])
         # list.append(x)
         # Преобразование файл doc в docx
         # file = x.split("/")
         new_str = str(x)
         if str(x)[-4:] == ".doc":
-            print(x)
             w = wc.Dispatch('word.Application')
             # r = os.path.abspath(file)
             doc_docx = w.Documents.Open(os.path.abspath(x))
@@ -232,7 +232,7 @@ def collecting_data(filepath):
 if __name__ == '__main__':
     collecting_data("data")
     filepath = find_wf("data")
-    print(filepath)
+    # print(filepath)
     # filepath = "data/Чек-лист _5 9 3 10 RUENG.docx"
     # build_package("data/RU_5_9_3_10.docx", dict_file_status = {})
     # build_package("data/R23 KK56 50UMA 0 ET WP WD003=r0.docx", dict_file_status={})

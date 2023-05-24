@@ -33,10 +33,16 @@ def docx_parse(filepath):
         typefile_cg = find_type("Сопроводительное письмо", text_all)
     if typefile_cg == 'Not found':
         typefile_cg = find_type("Пояснительная записка", text_all)
+    if typefile_cg == 'Not found':
+        typefile_cg = find_type("Заключение ПДТК", text_all)
+    if typefile_cg == 'Not found':
+        typefile_cg = find_type("Additional letter", text_all)
+    if typefile_cg == 'Not found':
+        typefile_cg = find_type("Explanatory Note", text_all)
 
     # Случай для главной ведомости
     if typefile_cg == "Рабочая документация":
-        print("----------")
+        # print("----------")
 
         # Создаём словарь для ведомости
         dict_info_main = {}
@@ -49,13 +55,13 @@ def docx_parse(filepath):
             if i != 0 and i != 1:
                 files_list.append(doc.tables[0].columns[0].cells[i].text)
 
-        print(files_list)
+        # print(files_list)
         dict_info_main["files_list"] = files_list
         # Собираем данные из второй таблицы
         for j in range(len(doc.tables[1].rows)):
             for i in range(len(doc.tables[1].rows[j].cells)):
                 if j != 0:
-                    print(doc.tables[1].rows[j].cells[i].text)
+                    # print(doc.tables[1].rows[j].cells[i].text)
                     text_clear = doc.tables[1].rows[j].cells[i].text
                     text_clear = re.sub(r"[/\|\?]", '-', text_clear, count=0)
                     if i == 0:
@@ -67,7 +73,7 @@ def docx_parse(filepath):
                     else:
                         dict_info_main[doc.tables[1].rows[0].cells[i].text] = text_clear
                         # full_text_table.append(cell.text)
-        print(dict_info_main)
+        # print(dict_info_main)
         # Возвращаем словарь с информацией о ведомости
         return dict_info_main
     else:
@@ -101,7 +107,7 @@ def docx_parse(filepath):
                         if i > 4:
                             dict_info[table.rows[0].cells[i].text] = []
 
-        print(dict_info)
+        # print(dict_info)
         return dict_info
 
 
