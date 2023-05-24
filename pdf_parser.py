@@ -1,6 +1,6 @@
 from PyPDF2 import PdfFileReader, PdfReader
-import pypdf
-from tabula import read_pdf
+# import pypdf
+# from tabula import read_pdf
 
 
 def pdf_parse(filepath):

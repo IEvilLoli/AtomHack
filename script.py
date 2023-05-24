@@ -9,10 +9,11 @@ import re
 import shutil
 import datetime
 import docx_parser
-import pandas as pd
 import xml.etree.ElementTree as ET
 from win32com import client as wc
 from pathlib import Path
+
+from excel_writer import create_excel
 
 
 # формирование отступов xml-файла
@@ -322,77 +323,12 @@ def collecting_data(filepath):
         # dict_file_status
     return dict_file_status
 
-# скрипт формирования отчётного excel файла
-def create_excel(dict_file_status, path_wf):
-    if path_wf != "":
-        dict_push = docx_parser.docx_parse(path_wf)
-
-    file_name = dict_file_status.keys()
-    file_name = list(file_name)
-
-    WF = []
-    FE = []
-    for values in dict_file_status.values():
-        if 'WF' in values:
-            WF.append(values['WF'])
-        else:
-            WF.append(0)
-        if 'FE' in values:
-            FE.append(values["FE"])
-        else:
-            FE.append(0)
-
-    check_file_WF = []
-    check_file_FE = []
-
-    for check in WF:
-        if check == 1:
-            check_file_WF.append('Да')
-        else:
-            check_file_WF.append('Нет')
-    for check in FE:
-        if check == 1:
-            check_file_FE.append('Да')
-        else:
-            check_file_FE.append('Нет')
-    # Подсчёт количества файлов физически
-    count_ex = 0
-    count_wf = 0
-    for x in FE:
-        count_ex += x
-    for x in WF:
-        count_wf += x
-
-    salaries2 = pd.DataFrame({'Имя файла': file_name,
-                              'Указан в ведомости': check_file_WF,
-                              'Существует физически': check_file_FE,
-                              })
-
-    if path_wf != "":
-        salaries1 = pd.DataFrame({'Контракт': [dict_push['order']],
-                                  'Блок': [dict_push["block"]],
-                                  'Ведомость': [dict_push["package"]],
-                                  'Количество файлов по ведомости': [count_wf],
-                                  'Количество файлов физически': [count_ex],
-                                  })
-    else:
-        salaries1 = pd.DataFrame({'Контракт': 0,
-                                  'Блок': 0,
-                                  'Ведомость': 0,
-                                  'Количество файлов по ведомости': 0,
-                                  'Количество файлов физически': 0,
-                                  }, index=[0])
-
-    salary_sheets = {'Общие сведения': salaries1, 'Сведения о ведомости': salaries2}
-    writer = pd.ExcelWriter('./files.xlsx', engine='xlsxwriter')
-    for sheet_name in salary_sheets.keys():
-        salary_sheets[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
-    writer._save()
-
 
 if __name__ == '__main__':
-    dict_file_status = collecting_data("data")
-    print(dict_file_status)
+    print("Enter folder path:")
+    path_folder = input()  # "data"
+    dict_file_status = collecting_data(path_folder)
+    # print(dict_file_status)
     try:
         path_wf = find_wf("data")
     except:
@@ -401,9 +337,3 @@ if __name__ == '__main__':
         with open("Logs.txt", "a", encoding='utf-8') as file:
             file.write(f"{now}: Ошибка : не найдена ведомость \n")
     create_excel(dict_file_status, path_wf)
-    # filepath = find_wf("data")
-    # print(filepath)
-    # filepath = "data/Чек-лист _5 9 3 10 RUENG.docx"
-    # build_package("data/RU_5_9_3_10.docx", dict_file_status = {})
-    # build_package("data/R23 KK56 50UMA 0 ET WP WD003=r0.docx", dict_file_status={})
-    # print(datetime.datetime.fromtimestamp(os.path.getctime(filepath)).strftime('%Y%m%d%H%M%S'))
