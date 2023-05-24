@@ -100,7 +100,8 @@ def build_package(filepath, dict_file_status):
     # получение информации о файле
     dict_push = docx_parser.docx_parse(filepath)
     file_check = filepath.split("\\")[1].split(".")[0]
-    dict_file_status[file_check] = {}
+    if not(file_check in dict_file_status):
+        dict_file_status[file_check] = {}
     dict_file_status[file_check]["FE"] = 1
     # print("")
 
@@ -121,7 +122,8 @@ def build_package(filepath, dict_file_status):
         for file in dict_push["files_list"]:
             # print(0)
             # if not dict_file_status[file]:
-            dict_file_status[file] = {}
+            if not(file in dict_file_status):
+                dict_file_status[file] = {}
             dict_file_status[file]["WF"] = 1
             print("")
 
