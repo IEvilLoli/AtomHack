@@ -99,6 +99,9 @@ def create_xml(dict_for_xml, filepath):
 def build_package(filepath, dict_file_status):
     # получение информации о файле
     dict_push = docx_parser.docx_parse(filepath)
+    file_check = filepath.split("\\")[1].split(".")[0]
+    dict_file_status[file_check] = {}
+    dict_file_status[file_check]["FE"] = 1
     # print("")
 
     #формирование основных директорий пакета
@@ -148,7 +151,6 @@ def build_package(filepath, dict_file_status):
         shutil.copy2(filepath, curr_path + "/IKL" + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/IKL" + "/" + dict_push["document_id"])
     elif dict_push["typefile"] =="Explanatory Note" or dict_push["typefile"] =="Пояснительная записка" or dict_push["typefile"] == "Рабочая документация":
-        print("lol")
         if not os.path.isdir(curr_path + "/Notes"):
             os.mkdir(curr_path + "/Notes")
         if not os.path.isdir(curr_path + "/Notes" + "/" + dict_push["document_id"]):
@@ -177,6 +179,7 @@ def build_package(filepath, dict_file_status):
             os.mkdir(curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         shutil.copy2(filepath, curr_path + "/" + dict_push["document_id"] + "/" + dict_push["document_id"] + ".files")
         create_xml(dict_push, curr_path + "/" + dict_push["document_id"])
+
 
 
 def find_wf(path):
