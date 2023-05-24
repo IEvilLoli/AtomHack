@@ -4,19 +4,15 @@
 # pip install xlsxwriter
 
 import io
-import shutil
-import docx
 import os
-import datetime
 import re
+import shutil
+import datetime
 import docx_parser
+import pandas as pd
 import xml.etree.ElementTree as ET
 from win32com import client as wc
 from pathlib import Path
-import pandas as pd
-import datetime
-from openpyxl.workbook import Workbook
-import xlsxwriter
 
 
 # формирование отступов xml-файла

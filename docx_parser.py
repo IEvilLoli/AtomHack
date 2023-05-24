@@ -2,12 +2,14 @@ import re
 import docx
 
 
+# функция поиска файла
 def find_type(name_type, text):
     typefile = re.search(name_type, text)
     typefile_cg = typefile[0] if typefile else 'Not found'
     return typefile_cg
 
 
+# функция извлечения данных из файлов
 def docx_parse(filepath):
     # Открытие и сбор текста из файла
     doc = docx.Document(filepath)
@@ -42,8 +44,6 @@ def docx_parse(filepath):
 
     # Случай для главной ведомости
     if typefile_cg == "Рабочая документация":
-        # print("----------")
-
         # Создаём словарь для ведомости
         dict_info_main = {}
 
@@ -77,7 +77,6 @@ def docx_parse(filepath):
         # Возвращаем словарь с информацией о ведомости
         return dict_info_main
     else:
-
         dict_info = {}
         dict_info["typefile"] = typefile_cg
         dict_info["list_other_column"] = []
@@ -106,10 +105,6 @@ def docx_parse(filepath):
                     else:
                         if i > 4:
                             dict_info[table.rows[0].cells[i].text] = []
-
         # print(dict_info)
         return dict_info
 
-
-# if __name__ == '__main__':
-#     docx_parse("data/RU_5_9_3_10.docx")
